@@ -2,6 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sorteador de Times</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,23 +15,36 @@
         .container { display: flex; gap: 20px; max-width: 1000px; margin: 0 auto; }
         .coluna { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex: 1; }
         .form-group { margin-bottom: 15px; }
-        input, select, button { padding: 10px; width: 100%; box-sizing: border-box; margin-top: 5px; }
-        button { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 4px; }
+        input, select, button { padding: 10px; width: 100%; box-sizing: border-box; margin-top: 5px; font-family: 'Montserrat', sans-serif; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 4px; font-size: 16px;}
         button:hover { background-color: #0056b3; }
         .btn-excluir { background-color: #dc3545; padding: 6px 10px; text-decoration: none; color: white; border-radius: 4px; font-size: 12px; }
-        .btn-limpar-tudo { background-color: #6c757d; display: block; text-align: center; margin-top: 20px; padding: 10px; text-decoration: none; color: white; border-radius: 4px; font-weight: bold; }
+        .btn-limpar-tudo { background-color: #6c757d; display: block; text-align: center; margin-top: 20px; padding: 12px; text-decoration: none; color: white; border-radius: 4px; font-weight: bold; }
         .msg { padding: 10px; margin-bottom: 15px; border-radius: 4px; font-weight: bold; }
         .msg.sucesso { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .msg.erro { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 300px; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
         th { background-color: #f2f2f2; }
         .time-box { background: #e9ecef; margin-bottom: 15px; padding: 15px; border-radius: 5px; border-left: 5px solid #007bff; }
         .time-box h3 { margin-top: 0; color: #007bff; }
         ul { list-style-type: none; padding-left: 0; }
-        li { padding: 5px 0; border-bottom: 1px solid #ddd; }
+        li { padding: 8px 0; border-bottom: 1px solid #ddd; }
         .check-container { display: flex; align-items: center; gap: 10px; cursor: pointer; background: #f8f9fa; padding: 10px; border-radius: 4px; }
-        .check-container input { width: auto; margin: 0; }
+        .check-container input { width: auto; margin: 0; transform: scale(1.2); }
+        
+        /* Proteção para a tabela no celular */
+        .tabela-container { overflow-x: auto; }
+
+        /* 2. MEDIA QUERY: A Regra do Celular */
+        @media (max-width: 768px) {
+            body { margin: 10px; } /* Reduz a margem lateral para ganhar espaço */
+            .container { 
+                flex-direction: column; /* Empilha as colunas: 1 embaixo da outra */
+            }
+            .coluna { padding: 15px; }
+            h1 { font-size: 24px; } /* Diminui um pouco o título principal */
+        }
     </style>
 </head>
 <body>
@@ -69,23 +83,25 @@
 
             <h2>Jogadores Cadastrados ({{ jogadores|length }})</h2>
             {% if jogadores %}
-                <table>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Nível</th>
-                        <th>Ação</th>
-                    </tr>
-                    {% for jog in jogadores %}
-                    <tr>
-                        <td>{{ jog.nome }}</td>
-                        <td>{{ niveis[jog.nivel] }}</td>
-                        <td><a href="/excluir/{{ jog.id }}" class="btn-excluir">Excluir</a></td>
-                    </tr>
-                    {% endfor %}
-                </table>
+                <div class="tabela-container">
+                    <table>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Nível</th>
+                            <th>Ação</th>
+                        </tr>
+                        {% for jog in jogadores %}
+                        <tr>
+                            <td>{{ jog.nome }}</td>
+                            <td>{{ niveis[jog.nivel] }}</td>
+                            <td><a href="/excluir/{{ jog.id }}" class="btn-excluir">Excluir</a></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
                 <a href="/excluir_todos" class="btn-limpar-tudo" onclick="return confirm('Isso apagará TODOS os jogadores. Confirmar?')">🗑️ Excluir Todos</a>
             {% else %}
-                <p>Nenhum jogador cadastrado ainda.</p>
+                <p style="text-align: center; color: #666;">Nenhum jogador cadastrado ainda.</p>
             {% endif %}
         </div>
 
@@ -108,7 +124,7 @@
                     </label>
                 </div>
 
-                <button type="submit" style="background-color: #28a745;">Sortear Times Agora</button>
+                <button type="submit" style="background-color: #28a745; padding: 15px;">Sortear Times Agora</button>
             </form>
 
             {% if times %}
@@ -165,7 +181,7 @@
                 localStorage.setItem('esconderNivel', checkbox.checked);
             };
 
-            // Executa ao carregar (caso já existam times na tela)
+            // Executa ao carregar
             atualizarVisibilidade();
 
             // Executa ao mudar a checkbox
